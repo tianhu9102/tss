@@ -18,6 +18,11 @@
 				<input type="button" value="教师列表" onclick="" >
 			</td>
 		</tr>
+		<tr>
+			<td>
+				<input type="button" value="练习" onclick="testResponsebody()" >
+			</td>
+		</tr>
 	</tbody>
 </table>
  
@@ -32,6 +37,9 @@
 	function lingk(){
 		//window.open("${pageContext.servletContext.contextPath}/euipment/indexs");
 		window.location.href="${pageContext.servletContext.contextPath}/euipment/indexs";
+	}
+	function testResponsebody(){
+		window.location.href="${pageContext.servletContext.contextPath}/th/student4";	
 	}
 </script>
 
