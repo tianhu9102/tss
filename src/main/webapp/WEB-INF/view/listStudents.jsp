@@ -9,16 +9,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <script type="text/javascript" src="${pageContext.servletContext.contextPath}/jslib/jquery/jquery-1.8.3-min.js"></script>
 
-<link ref="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/css/common.css" >
+<link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/css/common.css" >
 
-<title>SpringMVC ResponseBody用例</title>
+
+<title>学生管理系统</title>
 </head>
 
  <style type="text/css">
- 	 body table{
- 		border:1px solid black;
- 		width: 100%;
- 	} 
  	
  	th{
  		border:1px solid black;
@@ -31,28 +28,51 @@
  		align:center;
  		overflow-y:scroll;
  		text-align:center;
- 		heigth: 40%;
+ 		heigth: 70%;
  		/*background-color:rgb(0 ,0 ,139); */
  	}
+ 	 	
+ 	#copy_bottom{
+ 		margin: 0 auto;
+ 		margin-top:2%;
+ 		boarder:20px; 	
+ 		width:90%;
+ 		background:gray;
+ 		bottom:0;
+ 	}
  	
- 	#loop{
- 		margin-left: 2.5em;
+ 	#stu_cruditem button{
+	    background-color: white;
+    	color: black;
+    	border: 2px solid #4CAF50; /* Green */
+	    text-align: center;
+	    text-decoration: none;
+	    display: inline-block;
+	    font-size: 12px;
+	    width:60px;
  	}
  </style>
  
 <body>
- 	   </br></br>
+ 	  </br></br>
+ 	  <div id="loginitem">
+  	  </div> 
 	  
-	  <div id="loop">
-	  	<text>关键词：</text>
-	  	<input type="text" id="keyTxt" >  <!-- placeholder ="设备名称" -->
-	  	<input type="button" value="查找" onclick="findData()">
-	   <input type="button" value="刷新" onclick="refreshData()">   	 
-	  	<input type="button" value="清除" onclick="clearData()"> 	
-	  	<input type="button" value="新增" onclick="addData()"> 	
+	  <div id="stu_cruditem">
+	  	 <text>关键词：</text> 
+	  	 <input type="text" id="keyTxt" >     <!-- placeholder ="设备名称" -->
+<!-- 	  	 <button type="button" onclick="findData()">查找 </button> -->
+ 	     <input type="button" value="查找" onclick="findData()">
+	     <input type="button" value="刷新" onclick="refreshData()">   	 
+	  	 <input type="button" value="清除" onclick="clearData()"> 	
+	  	 <input type="button" value="修改" onclick="editData()"> 
+	  	 <input type="button" value="删除" onclick="deleteData()"> 
+		 <input type="button" value="新增" onclick="addData()">  
+		
 	  </div>
 	  
-	  <table class="stu_table">	 
+<!-- 	  onclick="selectRow(this)"  --> 
+	  <table id="stu_table" onclick="selectRow(this)" >	   
 	        <caption style="font-size:18px;font-weight:bold;color:#008B8B">学生列表</caption>
   			<thead id="stu_head">
   				<tr>
@@ -65,12 +85,21 @@
   				
   			</tbody>
 	  </table>
-
+	  
+	  <!-- <div id="copy_bottom">
+	  	<text style="margin-left:45%;font-size:16px"> @Copyright JinLing Middle School </text>
+	  </div>
+	 -->
+	 
 	 <!-- js函数模块  -->
  <script type="text/javascript">
  
-	 function queryData(){
-		 var urls = "${pageContext.servletContext.contextPath}/euipment/status";
+ 	$(document).ready(function(){
+		queryAllData();
+	})
+ 
+	 function queryAllData(){
+		 var urls = "${pageContext.servletContext.contextPath}/student/dispAlldata";
 		 var params = JSON.stringify( [ { name : "zhangWen", age : "16", id : 4  }, { name : "zhangWe2", age : "23", id : 5 } ] );		 
 		 $.ajax({
 			 type : 'POST',
@@ -132,7 +161,7 @@
 			 alert("输入为空，请重新输入！");
 		 }else{
 			 
-			 var urls = "${pageContext.servletContext.contextPath}/euipment/queryByValue";
+			 var urls = "${pageContext.servletContext.contextPath}/student/queryByValue";
 			 			 
 			 $.ajax({
 				 type : 'POST',
@@ -190,18 +219,85 @@
 	            //alert('您按了回车键')
 	        	findData();
 	        }else if(eCode == 100){
-	        	alert("右键");
+	        	//alert("右键");
 	        }else if(eCode == 97){
-	        	alert("左键");
+	        	//alert("左键");
 	        }
 	});
 	
-	function addData(){
-		window.open("${pageContext.servletContext.contextPath}/euipment/addstudent","添加学生页面","width=400,height=300");
+	function editData(){
+		var url='${pageContext.servletContext.contextPath}/student/stueidt'; //转向网页的地址; 
+        var name='add';                          //网页名称，可为空; 
+        var iWidth=600;                          //弹出窗口的宽度; 
+        var iHeight=300;                         //弹出窗口的高度; 
+        //获得窗口的垂直位置 
+        var iTop = (window.screen.availHeight - 30 - iHeight) / 2; 
+        //获得窗口的水平位置 
+        var iLeft = (window.screen.availWidth - 10 - iWidth) / 2; 
+        window.open(url, name, 'height=' + iHeight + ',innerHeight=' + iHeight + ',width=' + iWidth + ',innerWidth=' + iWidth + ',top=' + iTop + ',left=' + iLeft + ',status=no,toolbar=no,menubar=no,location=yes,resizable=no,scrollbars=0,titlebar=no'); 
 	}
-
+	
+	function addData(){
+		var url='${pageContext.servletContext.contextPath}/student/stuadd'; //转向网页的地址; 
+        var name='add';                          //网页名称，可为空; 
+        var iWidth=600;                          //弹出窗口的宽度; 
+        var iHeight=300;                         //弹出窗口的高度; 
+        //获得窗口的垂直位置 
+        var iTop = (window.screen.availHeight - 30 - iHeight) / 2; 
+        //获得窗口的水平位置 
+        var iLeft = (window.screen.availWidth - 10 - iWidth) / 2; 
+        window.open(url, name, 'height=' + iHeight + ',innerHeight=' + iHeight + ',width=' + iWidth + ',innerWidth=' + iWidth + ',top=' + iTop + ',left=' + iLeft + ',status=no,toolbar=no,menubar=no,location=yes,resizable=no,scrollbars=0,titlebar=no'); 
+	}
+	
+	function deleteData(){
+		 var urls = "${pageContext.servletContext.contextPath}/student/studelete";
+		 var param = {id:"6563"};
+		 $.ajax({
+			 type : 'POST',
+			 url : urls,
+			 data: param,
+			 dataType:"json",
+			 cache : false,
+			// contentType : "application/json",  后端看成单值时不能添加该行
+			 error : function(data){					 
+				 alert( "错误请求信息： "+data.responseText );					 
+			 },
+			 
+			 success : function(data,text){	
+				 alert(data.deletesuccess);				 
+			 }			 
+			 
+		 }); 		 
+	 }		 
+	
+		
+	function selectRow(obj){		
+		/* if(event.srcElement.tagName=="TD"){
+			
+			var curRow = event.srcElement.parentElement;
+			
+			//curRow.style.background="gray";
+			alert("这是第"+(curRow.rowIndex+1)+"行；  " );
+			
+			var jsonData = JSON.stringify( $("#body_stu").val($(this).closest("tr").find("td").eq(0).text()) );// 转成JSON格式
+			var result = $.parseJSON(jsonData);// 转成JSON对象
+			
+			alert(  $("#body_stu").on("click", "", function(event){
+			    	var data = $(this).closest("tr").find("td").eq(0).text();
+			    	var jsondata = JSON.stringify( data );
+			    	var result = $.parseJSON(jsondata);// 转成JSON对象
+			    	alert(result);
+				 })
+		    );
+		} */
+	} 
+	
+	
+	
 	 
-	 window.load = queryData();
+	// window.load = queryAllData();
+	
+	
  	</script>  	
  	
 </body>

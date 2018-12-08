@@ -36,11 +36,33 @@
 <script type="text/javascript">
 	function lingk(){
 		//window.open("${pageContext.servletContext.contextPath}/euipment/indexs");
-		window.location.href="${pageContext.servletContext.contextPath}/euipment/indexs";
+		window.location.href="${pageContext.servletContext.contextPath}/student/indexs";
 	}
 	function testResponsebody(){
 		window.location.href="${pageContext.servletContext.contextPath}/th/student4";	
 	}
+	
+	function initData(){
+		 var urls = "${pageContext.servletContext.contextPath}/student/indexs";
+		 var param = {id:"334",password:"4r3"};
+		 $.ajax({
+			 type : 'POST',
+			 url : urls,
+			 data: param,
+			 dataType:"json",
+			 cache : false,
+			// contentType : "application/json",  后端看成单值时不能添加该行
+			 error : function(data){					 
+				 alert( "错误请求信息： "+data.responseText );					 
+			 },
+			 
+			 success : function(data,text){		
+				 //window.location.href="${pageContext.servletContext.contextPath}/student/indexs";
+			 }			 
+			 
+		 }); 		 
+	 }		
+	
 </script>
 
 </body>

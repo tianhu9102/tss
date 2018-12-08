@@ -1,33 +1,34 @@
 package com.th.controller;
 
-import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.th.bean.Student;
+import com.th.dao.StudentDao;
 
 @Controller
-@RequestMapping(value = "/euipment")
+@RequestMapping(value = "/student")
 public class StudentController
 {
     @RequestMapping(value = "/indexs")
     public String dispIndex()
     {
+        System.out.println("ddd ----  ");
         return "listStudents";
     }
 
-    @RequestMapping(value = "/status")
+    @RequestMapping(value = "/dispAlldata")
     @ResponseBody
-    public List<Student> dispStatus()
+    public List<Student> dispAlldatasets()
     {
         List<Student> lstStus = allStus();
         return lstStus;
@@ -36,7 +37,7 @@ public class StudentController
     @RequestMapping(value = "/queryByValue")
     @ResponseBody
     // 看成单值
-    public List<Student> getStuByValue(@RequestParam String keys)
+    public List<Student> getStudentByValue(@RequestParam String keys)
     {
         // 数据库获取所有数据
         List<Student> lstStudents = allStus();
@@ -54,131 +55,115 @@ public class StudentController
         return patternData;
     }
 
-    @RequestMapping("/addstudent")
-    public String addStu()
+    @RequestMapping(value = "/stueidt")
+    public String editStu()
     {
-        return "addstu";
+        return "listStuedit";
     }
 
-    @RequestMapping(value = "/addstu")
+    @RequestMapping(value = "/stuadd")
+    public String addStu()
+    {
+        return "listStuadd";
+    }
+
+    @RequestMapping(value = "/stu_add")
     @ResponseBody
     // 看成单值
-    public Student addNewStu(@RequestParam String key1, @RequestParam String key2, @RequestParam String key3)
+    public Student addNewStu(@RequestParam(value = "name") String key1, @RequestParam(value = "age") String key2,
+                    @RequestParam(value = "id") String key3)
     {
-        // List<Student> lstStudents = allStus();
-
         Student stu1 = new Student();
-        stu1.setName(key1);
-        stu1.setAge(Integer.valueOf(key2));
-        stu1.setId(Integer.valueOf(key3));
+
+        boolean addflagsuccess = true;
+        List<Student> lstStu = allStus();
+        for (Student item : lstStu)
+        {
+            if (item.getId().toString().equals(key3))
+            {
+                addflagsuccess = false;
+                System.out.println("持久层无法添加新成员,已经存在 id=" + key3 + " 的成员");
+            }
+        }
+
+        if (addflagsuccess == true)
+        {
+            stu1.setName(key1);
+            stu1.setAge(Integer.valueOf(key2));
+            stu1.setId(Integer.valueOf(key3));
+
+            // 持久层
+            StudentDao psp = new StudentDao();
+            psp.addNewStu(stu1);
+        }
 
         return stu1;
     }
 
+    @RequestMapping(value = "/studelete")
+    @ResponseBody
+    // 看成单值
+    public Map<String, String> deleteStu(@RequestParam(value = "id") String id)
+    {
+        Map<String, String> map = new HashMap<String, String>();
+
+        // 持久层
+        StudentDao psp = new StudentDao();
+        boolean persistenceFlag = psp.deleteStudentById(Integer.valueOf(id));
+
+        map.put("deletesuccess", String.valueOf(persistenceFlag));
+
+        return map;
+    }
+
+    @RequestMapping(value = "/updataStudentById")
+    @ResponseBody
+    // 看成单值
+    public Student updataStudentById(@RequestParam String name, @RequestParam String age, @RequestParam String id)
+    {
+        // 持久层
+        StudentDao psp = new StudentDao();
+        boolean persistenceFlag = psp.updataStudentById(Integer.valueOf(id), name, age);
+
+        Student stu = new Student();
+        if (persistenceFlag == true)
+        {
+            stu.setId(Integer.valueOf(id));
+            stu.setName(name);
+            stu.setAge(Integer.valueOf(age));
+        }
+
+        return stu;
+    }
+
+    // 获取所有数据，并按照id号升序排列
     public static List<Student> allStus()
     {
+        StudentDao psp = new StudentDao();
+        List<Student> lstStudents = psp.queryAllDatasets();
 
-        List<Student> lstStudents = new ArrayList<Student>();
+        Collections.sort(lstStudents, new Comparator<Student>()
+        {
+            public int compare(Student o1, Student o2)
+            {
+                int id1 = o1.getId();
+                int id2 = o2.getId();
+                if (id1 > id2)
+                {
+                    return 1;
+                }
+                else if (id1 == id2)
+                {
+                    return 0;
+                }
+                else
+                {
+                    return -1;
+                }
 
-        Student stu1 = new Student();
-        stu1.setName("小明");
-        stu1.setAge(19);
-        stu1.setId(20170322);
+            }
 
-        Student stu2 = new Student();
-        stu2.setName("小军");
-        stu2.setAge(16);
-        stu2.setId(20170311);
-
-        Student stu3 = new Student();
-        stu3.setName("小红");
-        stu3.setAge(19);
-        stu3.setId(20170390);
-
-        Student stu4 = new Student();
-        stu4.setName("小代");
-        stu4.setAge(16);
-        stu4.setId(20170314);
-
-        Student stu5 = new Student();
-        stu5.setName("黄建明");
-        stu5.setAge(17);
-        stu5.setId(20170326);
-
-        Student stu6 = new Student();
-        stu6.setName("孙军");
-        stu6.setAge(19);
-        stu6.setId(20170222);
-
-        Student stu7 = new Student();
-        stu7.setName("刘文军");
-        stu7.setAge(16);
-        stu7.setId(20170211);
-
-        Student stu8 = new Student();
-        stu8.setName("韩红");
-        stu8.setAge(19);
-        stu8.setId(20170190);
-
-        Student stu9 = new Student();
-        stu9.setName("邱代");
-        stu9.setAge(16);
-        stu9.setId(20170314);
-
-        Student stu10 = new Student();
-        stu10.setName("代明");
-        stu10.setAge(17);
-        stu10.setId(20170126);
-
-        lstStudents.add(stu1);
-        lstStudents.add(stu2);
-        lstStudents.add(stu3);
-        lstStudents.add(stu4);
-        lstStudents.add(stu5);
-        lstStudents.add(stu6);
-        lstStudents.add(stu7);
-        lstStudents.add(stu8);
-        lstStudents.add(stu9);
-
-        lstStudents.add(stu1);
-        lstStudents.add(stu2);
-        lstStudents.add(stu3);
-        lstStudents.add(stu4);
-        lstStudents.add(stu5);
-        lstStudents.add(stu6);
-        lstStudents.add(stu7);
-        lstStudents.add(stu8);
-        lstStudents.add(stu9);
-
-        lstStudents.add(stu1);
-        lstStudents.add(stu2);
-        lstStudents.add(stu3);
-        lstStudents.add(stu4);
-        lstStudents.add(stu5);
-        lstStudents.add(stu6);
-        lstStudents.add(stu7);
-        lstStudents.add(stu8);
-        lstStudents.add(stu9);
-
-        lstStudents.add(stu1);
-        lstStudents.add(stu2);
-        lstStudents.add(stu3);
-        lstStudents.add(stu4);
-        lstStudents.add(stu5);
-        lstStudents.add(stu6);
-        lstStudents.add(stu7);
-        lstStudents.add(stu8);
-        lstStudents.add(stu9);
-
-        lstStudents.add(stu1);
-        lstStudents.add(stu2);
-        lstStudents.add(stu3);
-        lstStudents.add(stu4);
-        lstStudents.add(stu5);
-        lstStudents.add(stu6);
-        lstStudents.add(stu7);
-        lstStudents.add(stu8);
-        lstStudents.add(stu9);
+        });
 
         return lstStudents;
     }
